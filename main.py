@@ -4,10 +4,10 @@ from myCalibrator import CenterNetEntropyCalibrator
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description = "Pytorch2TensorRT args")
-    parser.add_argument("--batch_size", type=int, default=32, help='batch_size')
+    parser.add_argument("--batch_size", type=int, default=16, help='batch_size')
     parser.add_argument("--channel", type=int, default=3, help='input channel')
-    parser.add_argument("--height", type=int, default=288, help='input height')
-    parser.add_argument("--width", type=int, default=512, help='input width')
+    parser.add_argument("--height", type=int, default=416, help='input height')
+    parser.add_argument("--width", type=int, default=416, help='input width')
     parser.add_argument("--cache_file", type=str, default='', help='cache_file')
     parser.add_argument("--mode", type=str, default='', help='fp32, fp16 or int8')
     parser.add_argument("--onnx_file_path", type=str, default='', help='onnx_file_path')
@@ -19,7 +19,7 @@ if __name__ == "__main__":
         # In Calibrator class, you should override 'get_batch_size, get_batch',
         # 'read_calibration_cache', 'write_calibration_cache'.
         # You can reference implementation of CenterNetEntropyCalibrator.
-        calib = CenterNetEntropyCalibrator()
+        calib = CenterNetEntropyCalibrator(args)
     else:
         calib = None
     ONNX2TRT(args, calib=calib)

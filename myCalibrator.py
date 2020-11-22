@@ -22,12 +22,12 @@ import torchvision.transforms as transforms
 
 class CenterNetEntropyCalibrator(trt.IInt8EntropyCalibrator2):
 
-    def __init__(self, args, files_path='/home/user/Downloads/datasets/train_val_files/val.txt'):
+    def __init__(self, args, files_path='/content/Pytorch2TensorRT/my_files/calibration.txt'):
         trt.IInt8EntropyCalibrator2.__init__(self)
 
         self.cache_file = 'CenterNet.cache'
 
-        self.batch_size = args.batch_siz
+        self.batch_size = args.batch_size
         self.Channel = args.channel
         self.Height = args.height
         self.Width = args.width
@@ -39,7 +39,7 @@ class CenterNetEntropyCalibrator(trt.IInt8EntropyCalibrator2):
         self._txt_file = open(files_path, 'r')
         self._lines = self._txt_file.readlines()
         np.random.shuffle(self._lines)
-        self.imgs = [os.path.join('/home/user/Downloads/datasets/train_val_files/images',
+        self.imgs = [os.path.join('/content/Pytorch2TensorRT/my_files/calibration/',
                                   line.rstrip() + '.jpg') for line in self._lines]
         self.batch_idx = 0
         self.max_batch_idx = len(self.imgs)//self.batch_size
