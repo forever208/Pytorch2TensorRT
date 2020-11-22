@@ -8,7 +8,7 @@ if __name__ == "__main__":
     parser.add_argument("--channel", type=int, default=3, help='input channel')
     parser.add_argument("--height", type=int, default=416, help='input height')
     parser.add_argument("--width", type=int, default=416, help='input width')
-    parser.add_argument("--cache_file", type=str, default='', help='cache_file')
+    parser.add_argument("--cache_file", type=str, default='CenterNet.cache', help='cache_file')
     parser.add_argument("--mode", type=str, default='', help='fp32, fp16 or int8')
     parser.add_argument("--onnx_file_path", type=str, default='', help='onnx_file_path')
     parser.add_argument("--engine_file_path", type=str, default='', help='engine_file_path')
