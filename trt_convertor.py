@@ -13,12 +13,15 @@ def ONNX2TRT(args, calib=None):
 
     assert args.mode.lower() in ['fp32', 'fp16', 'int8'], "mode should be in ['fp32', 'fp16', 'int8']"
 
-    G_LOGGER = trt.Logger(trt.Logger.WARNING)
-    with trt.Builder(G_LOGGER) as builder, builder.create_network() as network, \
-            trt.OnnxParser(network, G_LOGGER) as parser:
+    # 声明一个TRT LOGGER，可以指定TRT日志的等级
+    TRT_LOGGER = trt.Logger(trt.Logger.WARNING)
 
-        builder.max_batch_size = args.batch_size
-        builder.max_workspace_size = 1 << 30
+    # 如果是 ONNX 模型，这里的 EXPLICIT_BATCH 是必不可少的，否则 parse 时会报错提醒
+    EXPLICIT_BATCH = 1 << (int)(trt.NetworkDefinitionCreationFlag.EXPLICIT_BATCH)
+
+    # 初始化一个 Builder， 创建一个空的 Network, 初始化 OnnxParser
+    with trt.Builder(TRT_LOGGER) as builder, builder.create_network(EXPLICIT_BATCH) as network, trt.OnnxParser(network, TRT_LOGGER) as parser:
+        builder.max_workspace_size = 1 * 1 << 30    # 指定最大工作空间 1 * 1 << 30 = 1GB
         if args.mode.lower() == 'int8':
             assert (builder.platform_has_fast_int8 == True), "not support int8"
             builder.int8_mode = True
@@ -27,12 +30,17 @@ def ONNX2TRT(args, calib=None):
             assert (builder.platform_has_fast_fp16 == True), "not support fp16"
             builder.fp16_mode = True
 
+        # parse ONNX file
         print('Loading ONNX file from path {}...'.format(args.onnx_file_path))
         with open(args.onnx_file_path, 'rb') as model:
-            print('Beginning ONNX file parsing')
-            parser.parse(model.read())
+            if not parser.parse(model.read()):
+                print('ERROR: Failed to parse the ONNX file.')
+                for error in range(parser.num_errors):
+                    print(parser.get_error(error))
+            # parser.parse(model.read())
         print('Completed parsing of ONNX file')
 
+        # build TRT engine
         print('Building an engine from file {}; this may take a while...'.format(args.onnx_file_path))
         engine = builder.build_cuda_engine(network)
         print("Created engine success! ")
@@ -46,9 +54,9 @@ def ONNX2TRT(args, calib=None):
 
 
 def loadEngine2TensorRT(filepath):
-    '''
-    通过加载计划文件，构建TensorRT运行引擎
-    '''
+    """
+    保存好的 TensorRT engine可以通过以下代码进行反序列化，读取到内存中使用, 构建TensorRT inference engine
+    """
     G_LOGGER = trt.Logger(trt.Logger.WARNING)
     # 反序列化引擎
     with open(filepath, "rb") as f, trt.Runtime(G_LOGGER) as runtime:
