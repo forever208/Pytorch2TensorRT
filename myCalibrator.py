@@ -9,7 +9,7 @@ Need to override some methods of trt.IInt8EntropyCalibrator2, such as get_batch_
 read_calibration_cache, write_calibration_cache.
 
 """
-
+import torchvision.transforms as transforms
 import tensorrt as trt
 import pycuda.driver as cuda
 import pycuda.autoinit
@@ -18,7 +18,7 @@ import os
 import numpy as np
 from PIL import Image
 
-import torchvision.transforms as transforms
+
 
 class CenterNetEntropyCalibrator(trt.IInt8EntropyCalibrator2):
 
