@@ -22,7 +22,7 @@ from PIL import Image
 
 class CenterNetEntropyCalibrator(trt.IInt8EntropyCalibrator2):
 
-    def __init__(self, args, files_path='/content/Pytorch2TensorRT/my_files/calibration.txt'):
+    def __init__(self, args, files_path='./my_files/calibration.txt'):
         trt.IInt8EntropyCalibrator2.__init__(self)
 
         self.cache_file = 'CenterNet.cache'
